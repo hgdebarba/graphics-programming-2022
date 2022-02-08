@@ -79,6 +79,11 @@ int main()
     glEnable(GL_DEPTH_TEST); // turn on z-buffer depth test
     glDepthFunc(GL_LESS); // draws fragments that are closer to the screen in NDC
 
+    // TODO exercise 2.6
+    // enable blending
+    // choose the right blending factors to produce additive blending
+    // glBlendFunc(?, ?);
+
     // render loop
     while (!glfwWindowShouldClose(window)) {
         // background color
