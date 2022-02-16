@@ -80,9 +80,14 @@ int main()
     glDepthFunc(GL_LESS); // draws fragments that are closer to the screen in NDC
 
     // TODO exercise 2.6
+    /* Comment this line to enable 2.6
     // enable blending
+	glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
     // choose the right blending factors to produce additive blending
-    // glBlendFunc(?, ?);
+    glBlendFunc(GL_ONE, GL_ONE); // Uncomment for additive blending
+	// glBlendFunc(GL_DST_COLOR, GL_ZERO); // Uncomment for multiplicative blending. Don't forget to change clear color to white!
+    //*/
 
     // render loop
     while (!glfwWindowShouldClose(window)) {
@@ -118,26 +123,74 @@ int main()
 
 // creates a cone triangle mesh, uploads it to openGL and returns the VAO associated to the mesh
 SceneObject instantiateCone(float r, float g, float b, float offsetX, float offsetY){
-    // TODO exercise 2.1
-    // (exercises 1.7 and 1.8 can help you with implementing this function)
 
     // Create an instance of a SceneObject,
     SceneObject sceneObject{};
 
     // you will need to store offsetX, offsetY, r, g and b in the object.
-    // CODE HERE
+	sceneObject.x = offsetX;
+	sceneObject.y = offsetY;
+    sceneObject.r = r;
+	sceneObject.g = g;
+	sceneObject.b = b;
+
     // Build the geometry into an std::vector<float> or float array.
-    // CODE HERE
+
+	std::vector<float> vertexData;
+	std::vector<GLint> vertexIndices;
+
+	// vertex center
+	vertexData.push_back(0.0f);
+	vertexData.push_back(0.0f);
+	vertexData.push_back(1.0f);
+
+	int triangleCount = 16;
+	float PI = 3.14159265f;
+	float angleInterval = (2 * PI) / (float)triangleCount;
+    float radius = 3.0f;
+
+	for (int i = 0; i <= triangleCount; i++) {
+		float angle = i * angleInterval;
+		// vertex circle at angle i*angleInterval
+		vertexData.push_back(cos(angle) * radius);
+		vertexData.push_back(sin(angle) * radius);
+		vertexData.push_back(0.0f);
+	}
+
+	for (int i = 0; i < triangleCount; i++) {
+		vertexIndices.push_back(0);
+		vertexIndices.push_back(i + 1);
+		vertexIndices.push_back(i + 2);
+	}
+
     // Store the number of vertices in the mesh in the scene object.
-    // CODE HERE
+    sceneObject.vertexCount = triangleCount * 3;
+
     // Declare and generate a VAO and VBO (and an EBO if you decide the work with indices).
-    // CODE HERE
+	unsigned int VAO, VBO, EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
     // Bind and set the VAO and VBO (and optionally a EBO) in the correct order.
-    // CODE HERE
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(GLfloat), vertexData.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndices.size() * sizeof(GLint), vertexIndices.data(), GL_STATIC_DRAW);
+
     // Set the position attribute pointers in the shader.
-    // CODE HERE
+    int posAttributeLocation = glGetAttribLocation(activeShader->ID, "pos");
+	glEnableVertexAttribArray(posAttributeLocation);
+	glVertexAttribPointer(posAttributeLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
     // Store the VAO handle in the scene object.
-    // CODE HERE
+    sceneObject.VAO = VAO;
+
+    // Unbind VAO, VBO (and optionally a EBO)
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     // 'return' the scene object for the cone instance you just created.
     return sceneObject;
@@ -150,25 +203,45 @@ void button_input_callback(GLFWwindow* window, int button, int action, int mods)
 
     // Test button press, see documentation at:
     //     https://www.glfw.org/docs/latest/input_guide.html#input_mouse_button
-    // CODE HERE
-    // If a left mouse button press was detected, call instantiateCone:
-    // - Push the return value to the back of the global 'vector<SceneObject> sceneObjects'.
-    // - The click position should be transformed from screen coordinates to normalized device coordinates,
-    //   to obtain the offset values that describe the position of the object in the screen plane.
-    // - A random value in the range [0, 1] should be used for the r, g and b variables.
-    // CODE HERE
-
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        // If a left mouse button press was detected, call instantiateCone:
+        // - Push the return value to the back of the global 'vector<SceneObject> sceneObjects'.
+        // - The click position should be transformed from screen coordinates to normalized device coordinates,
+        //   to obtain the offset values that describe the position of the object in the screen plane.
+        // - A random value in the range [0, 1] should be used for the r, g and b variables.
+        double xPos, yPos;
+        glfwGetCursorPos(window, &xPos, &yPos);
+        float offsetX = static_cast<float>((xPos / SCR_WIDTH) * 2 - 1);
+		float offsetY = static_cast<float>((1 - yPos / SCR_HEIGHT) * 2 - 1);
+		SceneObject sceneObject = instantiateCone(rand()/(RAND_MAX + 1.0f), rand() / (RAND_MAX + 1.0f), rand() / (RAND_MAX + 1.0f), offsetX, offsetY);
+        sceneObjects.push_back(sceneObject);
+	}
 }
 
 // glfw: called whenever a keyboard key is pressed
-void key_input_callback(GLFWwindow* window, int button, int other,int action, int mods){
+void key_input_callback(GLFWwindow* window, int key, int other,int action, int mods){
     // TODO exercise 2.4
 
     // Set the activeShader variable by detecting when the keys 1, 2 and 3 were pressed;
     // see documentation at https://www.glfw.org/docs/latest/input_guide.html#input_keyboard
     // Key 1 sets the activeShader to &shaderPrograms[0];
     //   and so on.
-    // CODE HERE
+    if (action == GLFW_PRESS)
+    {
+        switch (key)
+        {
+        case GLFW_KEY_1:
+            activeShader = &shaderPrograms[0];
+            break;
+		case GLFW_KEY_2:
+			activeShader = &shaderPrograms[1];
+			break;
+		case GLFW_KEY_3:
+			activeShader = &shaderPrograms[2];
+			break;
+        }
+    }
 }
 
 
