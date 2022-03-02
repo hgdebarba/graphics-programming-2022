@@ -180,7 +180,7 @@
 					<p>Lighting loses intensity as the distance between the light emitter and the surface increases. That is because the further the light waves travel, the larger is the area of the spherical surface that it occupies. That means that the lighting area is increasing, but the energy is not (it remains constant)</p>
 					<p>We can simulate this attenuation by taking the distance between the fragment and the light into account. To implement attenuation:</p>
 					<ul>
-						<li>Compute the distance to the camera.</li>
+						<li>Compute the distance to the light.</li>
 						<li>Compute attenuation as 1 divided by distance squared.</li>
 					</ul>
 					<p>This way of computing attenuation is realistic, but as you can see it is not very convenient to tweak the lighting. In videogames many times we add some linear component as well.</p>
