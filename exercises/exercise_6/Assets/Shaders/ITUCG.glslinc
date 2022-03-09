@@ -67,7 +67,7 @@ vec3 GetDiffuseLighting(float diffuseReflectance, vec3 color, vec3 normal, vec3 
 }
 
 // Specular component of the Phong reflection model
-vec3 GetSpecularLighthing(float specularReflectance, float specularExponent, vec3 specularColor, vec3 normal, vec3 lightDir, vec3 viewDir)
+vec3 GetSpecularLighting(float specularReflectance, float specularExponent, vec3 specularColor, vec3 normal, vec3 lightDir, vec3 viewDir)
 {
 	vec3 halfDir = normalize(lightDir + viewDir);
 	return specularReflectance * pow(saturate(dot(normal, halfDir)), specularExponent) * specularColor * _LightColor0.rgb;
@@ -82,7 +82,7 @@ vec3 BlinnPhongLighting(
 {
 	vec3 ambient = GetAmbientLighting(ambientReflectance, color);
 	vec3 diffuse = GetDiffuseLighting(diffuseReflectance, color, normal, lightDir);
-	vec3 specular = GetSpecularLighthing(specularReflectance, specularExponent, specularColor, normal, lightDir, viewDir);
+	vec3 specular = GetSpecularLighting(specularReflectance, specularExponent, specularColor, normal, lightDir, viewDir);
 	return ambient + diffuse + specular;
 }
 
