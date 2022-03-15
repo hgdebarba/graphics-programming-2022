@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Teapot
-  m_Shader: {fileID: 4800000, guid: b6002cff188bed246a13de5a1bb1a86f, type: 3}
+  m_Shader: {fileID: 4800000, guid: 026cf2be554ff724d9b9dd0d45b5c85b, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -41,6 +41,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EnvironmentTexture:
+        m_Texture: {fileID: 8900000, guid: e5e076cbbaa68064a8554f64d0817e75, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Hatch0Texture:
@@ -100,6 +104,8 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _RefractionAngle: 0.75
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularExponent: 100
     - _SpecularHighlights: 1
