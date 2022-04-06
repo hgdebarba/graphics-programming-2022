@@ -28,16 +28,16 @@ struct Output
     Material material;
 };
 
-// Default value for output
-void InitOutput(out Output output)
+// Default value for o
+void InitOutput(out Output o)
 {
-    output.normal = vec3(0, 0, 1);
-    output.material.color = sphereColor;
-    output.material.phong = vec4(1, 1, 1, 10);
+    o.normal = vec3(0, 0, 1);
+    o.material.color = sphereColor;
+    o.material.phong = vec4(1, 1, 1, 10);
 }
 
 // Signed distance function
-float GetDistance(vec3 p, inout Output output)
+float GetDistance(vec3 p, inout Output o)
 {
     // Get sphere center from modelView matrix position
     vec3 center = _rm_modelView[3].xyz;
@@ -48,29 +48,29 @@ float GetDistance(vec3 p, inout Output output)
     float scaleZ = length(_rm_modelView[2].xyz);
     float radius = min(scaleX, min(scaleY, scaleZ));
 
-    return sdfSphere(transformToLocal(p, center), output.normal, radius);
+    return sdfSphere(transformToLocal(p, center), o.normal, radius);
 }
 
 
 // Output function: Blinn-Phong lighting
-vec4 GetOutputColor(vec3 point, float distance, Output output)
+vec4 GetOutputColor(vec3 point, float distance, Output o)
 {
     vec3 P = point;
-    vec3 N = output.normal;
+    vec3 N = o.normal;
     vec3 L = normalize(lightDir);
     vec3 V = normalize(-P);
     vec3 H = normalize(L + V);
 
-    vec3 albedo = output.material.color;
+    vec3 albedo = o.material.color;
 
-    float ambientReflectance = output.material.phong.x;
+    float ambientReflectance = o.material.phong.x;
     vec3 ambient = ambientLightColor * ambientReflectance * albedo;
 
-    float diffuseReflectance = output.material.phong.y;
+    float diffuseReflectance = o.material.phong.y;
     vec3 diffuse = diffuseReflectance * albedo;
 
-    float specularReflectance = output.material.phong.z;
-    float specularExponent = output.material.phong.w;
+    float specularReflectance = o.material.phong.z;
+    float specularExponent = o.material.phong.w;
     float specModulation = pow(max(dot(H, N), 0.0f), specularExponent);
     vec3 specular = vec3(1.0f) * specularReflectance * specModulation;
 
