@@ -46,7 +46,7 @@ namespace rt{
             vec2 pixel_size = abs(vec2(lower_left_corner)) * 2.0f / vec2(fb.H, fb.W);
 
 
-            // TODO ex 10.1 iterate through all pixels in the buffer (width: [0, fb.W), height:[0, fb.H])
+            // TODO ex 11.1 iterate through all pixels in the buffer (width: [0, fb.W), height:[0, fb.H])
             //  for each pixel,
             //  - find its position in the space of the camera,
             //  - apply the view_to_model transformation so that we place the pixel in the space of the model
@@ -71,14 +71,14 @@ namespace rt{
             if (! RayModelIntersection(ray, vts, hitInfo)) return col; // no hit, return black
 
 
-            // TODO ex 10.2 replace the current i_normal and i_col computation with their interpolated versions
+            // TODO ex 11.2 replace the current i_normal and i_col computation with their interpolated versions
             vec3 i_normal = vts[hitInfo.hit_ID].norm;
             color i_col = vts[hitInfo.hit_ID].col;
 
             vec3 i_pos = ray.origin + ray.direction * hitInfo.dist;
 
 
-            // TODO ex 10.3 implement the phong reflection model for the point light below
+            // TODO ex 11.3 implement the phong reflection model for the point light below
             vec3 light_pos(0,1.9f,0); // light position in model space
             col = i_col; // set the light reflection color here
 
