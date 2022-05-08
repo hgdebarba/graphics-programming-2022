@@ -30,6 +30,7 @@ struct Output
     Material material;
 };
 
+// Fill in this function to define your scene
 bool castRay(Ray ray, inout float distance, out Output o);
 bool castRay(Ray ray, inout float distance)
 {
@@ -37,11 +38,11 @@ bool castRay(Ray ray, inout float distance)
     return castRay(ray, distance, o);
 }
 
+// Fill in this function to process the output once the ray has found a hit
 vec3 ProcessOutput(Ray ray, Output o);
 
+// Function to enable recursive rays
 bool PushRay(vec3 point, vec3 direction, vec3 colorFilter);
-
-
 
 
 
