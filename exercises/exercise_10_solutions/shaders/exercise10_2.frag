@@ -21,6 +21,8 @@ void InitOutput(out Output o)
 
 uniform float currentTime = 0;
 
+uniform sampler2D textureSampler;
+
 // Signed distance function
 float GetDistance(vec3 p, inout Output o)
 {
@@ -83,6 +85,9 @@ vec4 GetOutputColor(vec3 point, float distance, Output o)
     vec3 specular = vec3(1.0f) * specularReflectance * specModulation;
 
     vec3 lighting = ambient + (diffuse + specular) * lightColor * lightIntensity * max(dot(N, L), 0.0f);
-    return vec4(lighting, 1);
+
+    float textureColor = texture(textureSampler, point.xy * 0.5 + 0.5).r;
+
+    return vec4(lighting * textureColor, 1);
 }
 

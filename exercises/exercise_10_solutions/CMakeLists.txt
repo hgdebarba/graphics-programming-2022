@@ -21,6 +21,9 @@ if(APPLE)
             )
 endif()
 
+## copy models and textures
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 # hack to provide shader folder
 target_compile_definitions(${subdir} PUBLIC SHADER_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/shaders/")
 

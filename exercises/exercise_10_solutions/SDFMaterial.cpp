@@ -5,6 +5,7 @@
 SDFMaterial::SDFMaterial(const SDFShader* shader)
     :m_Shader(shader)
 {
+    m_Textures.reserve(32);
 }
 
 void SDFMaterial::Use() const
@@ -14,6 +15,12 @@ void SDFMaterial::Use() const
     for (auto& it : m_Properties)
     {
         m_Shader->SetUniform(it.second, &m_ValuePool[it.first]);
+    }
+
+    for (int i = 0; i < m_Textures.size(); ++i)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, m_Textures[i]);
     }
 }
 
@@ -62,5 +69,13 @@ SDFMaterial::PropertyID SDFMaterial::AddProperty(int location)
     m_Properties[propertyId] = uniformIndex;
     m_LocationProperties[location] = propertyId;
     return propertyId;
+}
+
+void SDFMaterial::AddTexture(const char* samplerName, unsigned int textureId)
+{
+    assert(m_Textures.size() < 32);
+
+    SetPropertyValue(samplerName, (int)m_Textures.size());
+    m_Textures.push_back(textureId);
 }
 

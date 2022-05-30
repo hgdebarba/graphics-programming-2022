@@ -33,6 +33,8 @@ public:
     template <typename T>
     T* GetPropertyPointer(PropertyID propertyId);
 
+    void AddTexture(const char* samplerName, unsigned int textureId);
+
     const SDFShader* GetShader() const { return m_Shader; }
 
     void Use() const;
@@ -50,6 +52,8 @@ private:
     std::unordered_map<int, PropertyID> m_LocationProperties;
 
     std::unordered_set<std::string> m_MissingProperties;
+
+    std::vector<unsigned int> m_Textures;
 
     static_assert(sizeof(int) == sizeof(float), "Using the same pool for ints and floats, size must match");
     std::vector<int> m_ValuePool;

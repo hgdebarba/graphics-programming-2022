@@ -8,6 +8,10 @@
 #include <imgui_impl_opengl3.h>
 
 #include <iostream>
+#include <string>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 #include "RayMarcher.h"
 #include "SDFCamera.h"
@@ -32,6 +36,8 @@ bool showGui = false;
 // global object functions
 void createGlobalObjects();
 void deleteGlobalObjects();
+
+unsigned int TextureFromFile(const char* path, bool gamma = true);
 
 // screen settings
 // ---------------
@@ -76,6 +82,9 @@ int main()
     SDFMaterial defaultMaterial(&defaultShader);
     SDFObject defaultObject(s_QuadGeometry, &defaultMaterial);
     s_RayMarcher->AddObject(&defaultObject);
+
+    unsigned int textureTest = TextureFromFile("textures/test.png");
+    defaultMaterial.AddTexture("textureSampler", textureTest);
 
     // EXTRA: Object using a cube instead of a full screen pass
     //SDFShader sphereShader(SHADER_FOLDER "raymarcher.vert", SHADER_FOLDER "sphere_lit.frag");
@@ -331,4 +340,47 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     if (s_Camera)
         s_Camera->SetAspect((float)width / height);
+}
+
+unsigned int TextureFromFile(const char* path, bool gamma)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format, internalFormat;
+        if (nrComponents == 1)
+            internalFormat = format = GL_RED;
+        else if (nrComponents == 3)
+        {
+            format = GL_RGB;
+            internalFormat = gamma ? GL_SRGB : format;
+        }
+        else if (nrComponents == 4)
+        {
+            format = GL_RGBA;
+            internalFormat = gamma ? GL_SRGB_ALPHA : format;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }
